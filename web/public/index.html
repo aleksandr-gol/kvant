@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Квант — ИИ-аналитик Мосбиржи</title>
+  <meta name="description" content="ИИ-агент для частного инвестора: разбор портфеля, план накоплений, анализ компаний и облигаций на данных Мосбиржи и Банка России.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23134e4a'/%3E%3Cpath d='M9 22V10h6.5a6 6 0 0 1 0 12z' fill='none' stroke='%23fde68a' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8"/><path d="M9 22V10h6.5a6 6 0 0 1 0 12z"/></svg>
+      </span>
+      <div>
+        <div class="name">Квант</div>
+        <div class="tagline">ИИ-аналитик российского рынка</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span id="status" class="status" title="Состояние сервера">…</span>
+      <button id="reset" class="ghost" type="button">Новый диалог</button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section id="welcome" class="welcome">
+      <h1>Спросите о рынке — агент сам соберёт данные, посчитает и проверит числа</h1>
+      <p class="lead">Котировки и облигации Мосбиржи, отчётность МСФО, дивиденды, ключевая ставка и инфляция ЦБ, новости. Каждый шаг агента виден, каждое число в ответе сверяется с данными.</p>
+
+      <div class="tasks">
+        <article class="task">
+          <h2><span class="ico">◐</span>Портфель</h2>
+          <p>Доли, сектора, риск против индекса, дивиденды против ключевой ставки, черновики заявок.</p>
+          <button class="ex" type="button">Разбери портфель: SBER 300 шт, LKOH 10 шт, ОФЗ 26238 50 шт, TMOS на 50 000 ₽, свободно 20 000 ₽</button>
+          <button class="ex" type="button" data-open="portfolio">Ввести свой портфель…</button>
+        </article>
+        <article class="task">
+          <h2><span class="ico">↗</span>Накопления</h2>
+          <p>Сколько откладывать и что получится к сроку: ОФЗ, акции, ИИС-3, налог, инфляция.</p>
+          <button class="ex" type="button">Хочу накопить 5 млн ₽ за 10 лет, сейчас есть 300 тыс., могу откладывать 20 тыс. в месяц. Учти ИИС.</button>
+          <button class="ex" type="button">Куда положить 1 млн ₽ на 3 года надёжнее вклада? Подбери лестницу ОФЗ.</button>
+        </article>
+        <article class="task">
+          <h2><span class="ico">▤</span>Компания</h2>
+          <p>Отчётность, мультипликаторы, дивиденды, оценка и сравнение с отраслью.</p>
+          <button class="ex" type="button">Сравни Сбербанк и ВТБ по прибыли, P/E, P/B и дивидендам</button>
+          <button class="ex" type="button">Оцени справедливую стоимость Магнита по DCF</button>
+        </article>
+        <article class="task">
+          <h2><span class="ico">◇</span>Рынок</h2>
+          <p>Скринер акций, ставка ЦБ, кривая ОФЗ, свежие новости.</p>
+          <button class="ex" type="button">Найди акции с дивдоходностью выше 10% и P/E ниже 6, без мусорных бумаг</button>
+          <button class="ex" type="button">Какая сейчас ключевая ставка, инфляция и доходность ОФЗ на 1, 3 и 10 лет?</button>
+        </article>
+      </div>
+
+      <form id="portfolio" class="portfolio" hidden>
+        <label for="pf-text">Мой портфель — по строке на позицию: тикер или название, затем количество штук или сумма в рублях</label>
+        <textarea id="pf-text" rows="6" spellcheck="false">SBER 300
+LKOH 10
+ОФЗ 26238 50
+TMOS 50000₽
+Деньги 20000</textarea>
+        <div class="pf-row">
+          <select id="pf-goal" aria-label="Цель">
+            <option value="Проверь риски и предложи ребалансировку">Проверить риски и ребалансировать</option>
+            <option value="Хочу больше пассивного дохода — что поменять?">Больше пассивного дохода</option>
+            <option value="Сравни доходность портфеля с ОФЗ и ключевой ставкой">Сравнить со ставкой и ОФЗ</option>
+          </select>
+          <button type="submit" class="primary">Разобрать</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="thread" class="thread" aria-live="polite"></section>
+  </main>
+
+  <footer class="composer">
+    <form id="ask">
+      <textarea id="input" rows="1" maxlength="2000" placeholder="Например: стоит ли сейчас покупать ОФЗ 26238?" aria-label="Вопрос"></textarea>
+      <button id="send" type="submit" class="primary" aria-label="Отправить">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </form>
+    <p class="fine">Котировки Мосбиржи с задержкой ~15 минут. Ответы — аналитика, а не индивидуальная инвестиционная рекомендация; сделки агент не совершает.</p>
+  </footer>
+
+  <script src="/vendor/marked.js"></script>
+  <script src="/vendor/purify.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+services:
+  web:
+    build: .
+    image: kvant:latest
+    env_file: .env
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8787
+      NODE_EXTRA_CA_CERTS: /app/certs/russian_trusted_root_ca.pem
+    ports:
+      - "127.0.0.1:${KVANT_PORT:-18300}:8787"
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /app/.kvant:mode=1777,size=64m
+      - /tmp:mode=1777,size=64m
+    mem_limit: 768m
